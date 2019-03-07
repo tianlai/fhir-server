@@ -49,7 +49,11 @@ namespace Microsoft.Health.Fhir.Web
 
             if (!string.IsNullOrWhiteSpace(instrumentationKey))
             {
-                services.AddApplicationInsightsTelemetry(instrumentationKey);
+                services.AddApplicationInsightsTelemetry(o =>
+                {
+                    o.EnableAdaptiveSampling = false;
+                    o.InstrumentationKey = instrumentationKey;
+                });
                 services.AddLogging(loggingBuilder => loggingBuilder.AddApplicationInsights(instrumentationKey));
             }
         }
