@@ -22,6 +22,7 @@ using Microsoft.Health.Extensions.DependencyInjection;
 using Microsoft.Health.Fhir.Core.Exceptions;
 using Microsoft.Health.Fhir.Core.Features.Conformance;
 using Microsoft.Health.Fhir.Core.Features.Context;
+using Microsoft.Health.Fhir.Core.Features.Export;
 using Microsoft.Health.Fhir.Core.Features.Persistence;
 using Microsoft.Health.Fhir.CosmosDb.Features.Storage.StoredProcedures.HardDelete;
 using Microsoft.Health.Fhir.CosmosDb.Features.Storage.StoredProcedures.Upsert;
@@ -209,6 +210,18 @@ namespace Microsoft.Health.Fhir.CosmosDb.Features.Storage
 
                 throw;
             }
+        }
+
+        public async Task UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
+        {
+            EnsureArg.IsNotNull(jobRecord, nameof(jobRecord));
+
+            var result = await _documentClient.CreateDocumentAsync(
+                _collectionUri,
+                jobRecord,
+                cancellationToken: cancellationToken);
+
+            var statusCode = result.StatusCode;
         }
 
         internal IDocumentQuery<T> CreateDocumentQuery<T>(
