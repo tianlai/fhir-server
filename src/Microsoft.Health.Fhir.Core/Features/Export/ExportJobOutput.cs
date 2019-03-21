@@ -17,8 +17,8 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
 
         public ExportJobOutput(List<ExportJobOutputResult> errors, List<ExportJobOutputResult> results)
         {
-            EnsureArg.IsNotNull(errors);
-            EnsureArg.IsNotNull(results);
+            EnsureArg.IsNotNull(errors, nameof(errors));
+            EnsureArg.IsNotNull(results, nameof(results));
 
             Errors = errors;
             Results = results;
@@ -27,5 +27,19 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
         public List<ExportJobOutputResult> Errors { get; }
 
         public List<ExportJobOutputResult> Results { get; }
+
+        public void AddError(ExportJobOutputResult error)
+        {
+            EnsureArg.IsNotNull(error, nameof(error));
+
+            Errors.Add(error);
+        }
+
+        public void AddResult(ExportJobOutputResult result)
+        {
+            EnsureArg.IsNotNull(result, nameof(result));
+
+            Results.Add(result);
+        }
     }
 }

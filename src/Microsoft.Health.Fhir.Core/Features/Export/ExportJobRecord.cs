@@ -12,19 +12,19 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
 {
     public class ExportJobRecord
     {
-        private const string PartitionKey = "ExportJob";
-
-        public ExportJobRecord(Uri requestUri)
+        public ExportJobRecord(ExportRequest exportRequest)
         {
-            EnsureArg.IsNotNull(requestUri, nameof(requestUri));
+            EnsureArg.IsNotNull(exportRequest, nameof(exportRequest));
 
-            RequestUri = requestUri;
+            Request = exportRequest;
 
             JobStatus = ExportJobStatus.Queued;
             Id = Guid.NewGuid().ToString();
+            Progress = new ExportJobProgress("query", 1);
+            Output = new ExportJobOutput();
         }
 
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public string Id { get; }
 
         public ExportJobStatus JobStatus { get; }
@@ -37,22 +37,26 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
 
         public DateTimeOffset StartTimeStamp { get; }
 
+        public DateTimeOffset EndTimeStamp { get; }
+
         public int NumberOfConsecutiveFailures { get; }
 
         public int TotalNumberOfFailures { get; }
 
+        [JsonProperty("partitionKey")]
+        public string PartitionKey { get; } = "ExportJob";
+
         public ExportRequest Request { get; }
 
-        public ExportJobProgress Progress { get; }
+        public ExportJobProgress Progress { get; private set; }
 
         public ExportJobOutput Output { get; }
 
-        public void DummyMethod()
+        public void UpdateJobProgress(ExportJobProgress progress)
         {
-            if (JobStatus == ExportJobStatus.Queued)
-            {
-                throw new NotImplementedException();
-            }
+            EnsureArg.IsNotNullOrEmpty(progress?.Query, nameof(progress));
+
+            Progress = progress;
         }
     }
 }

@@ -68,8 +68,10 @@ namespace Microsoft.Health.Fhir.Api.Controllers
         [HttpGet]
         [Route(KnownRoutes.Export)]
         [AuditEventType(AuditEventSubType.Export)]
-        public IActionResult Export()
+        public async Task<IActionResult> Export()
         {
+            await _mediator.ExportAsync(_fhirRequestContextAccessor.FhirRequestContext.Uri);
+
             return CheckIfExportIsEnabledAndRespond();
         }
 

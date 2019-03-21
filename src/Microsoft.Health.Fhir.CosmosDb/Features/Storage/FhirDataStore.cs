@@ -219,6 +219,8 @@ namespace Microsoft.Health.Fhir.CosmosDb.Features.Storage
             var result = await _documentClient.CreateDocumentAsync(
                 _collectionUri,
                 jobRecord,
+                new RequestOptions() { PartitionKey = new PartitionKey(jobRecord.PartitionKey) },
+                disableAutomaticIdGeneration: true,
                 cancellationToken: cancellationToken);
 
             var statusCode = result.StatusCode;

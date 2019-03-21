@@ -4,8 +4,8 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Net;
-using MediatR;
 using Hl7.Fhir.Model;
+using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Health.Fhir.Api.Controllers;
@@ -38,20 +38,20 @@ namespace Microsoft.Health.Fhir.Api.UnitTests.Controllers
         [Fact]
         public async void GivenAnExportRequest_WhenEnabled_ThenNotImplementedResponseShouldBeReturned()
         {
-            var result = _exportEnabledController.Export() as FhirResult;
+            var result = await _exportEnabledController.Export() as FhirResult;
 
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.NotImplemented, result.StatusCode);
         }
 
         [Fact]
-        public async void GivenAnExportByResourceTypeRequest_WhenResourceTypeIsNotPatient_ThenBadRequestResponseShouldBeReturned()
+        public void GivenAnExportByResourceTypeRequest_WhenResourceTypeIsNotPatient_ThenBadRequestResponseShouldBeReturned()
         {
-            Assert.Throws<RequestNotValidException>(() => exportController.ExportResourceType("Observation"));
+            Assert.Throws<RequestNotValidException>(() => _exportEnabledController.ExportResourceType("Observation"));
         }
 
         [Fact]
-        public async void GivenAnExportByResourceTypeRequest_WhenResourceTypeIsPatient_ThenNotImplementedResponseShouldBeReturned()
+        public void GivenAnExportByResourceTypeRequest_WhenResourceTypeIsPatient_ThenNotImplementedResponseShouldBeReturned()
         {
             var result = _exportEnabledController.ExportResourceType(ResourceType.Patient.ToString()) as FhirResult;
 
@@ -60,13 +60,13 @@ namespace Microsoft.Health.Fhir.Api.UnitTests.Controllers
         }
 
         [Fact]
-        public async void GivenAnExportResourceTypeIdRequest_WhenResourceTypeIsNotGroup_ThenBadRequestResponseShouldBeReturned()
+        public void GivenAnExportResourceTypeIdRequest_WhenResourceTypeIsNotGroup_ThenBadRequestResponseShouldBeReturned()
         {
-            Assert.Throws<RequestNotValidException>(() => exportController.ExportResourceTypeById("Patient", "id"));
+            Assert.Throws<RequestNotValidException>(() => _exportEnabledController.ExportResourceTypeById("Patient", "id"));
         }
 
         [Fact]
-        public async void GivenAnExportByResourceTypeIdRequest_WhenResourceTypeIsGroup_ThenNotImplementedResponseShouldBeReturned()
+        public void GivenAnExportByResourceTypeIdRequest_WhenResourceTypeIsGroup_ThenNotImplementedResponseShouldBeReturned()
         {
             var result = _exportEnabledController.ExportResourceTypeById(ResourceType.Group.ToString(), "id") as FhirResult;
 
