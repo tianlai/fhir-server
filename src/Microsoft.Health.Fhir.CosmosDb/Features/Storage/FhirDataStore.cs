@@ -212,7 +212,7 @@ namespace Microsoft.Health.Fhir.CosmosDb.Features.Storage
             }
         }
 
-        public async Task UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
+        public async Task<bool> UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
         {
             EnsureArg.IsNotNull(jobRecord, nameof(jobRecord));
 
@@ -223,7 +223,7 @@ namespace Microsoft.Health.Fhir.CosmosDb.Features.Storage
                 disableAutomaticIdGeneration: true,
                 cancellationToken: cancellationToken);
 
-            var statusCode = result.StatusCode;
+            return result.StatusCode == HttpStatusCode.OK;
         }
 
         internal IDocumentQuery<T> CreateDocumentQuery<T>(

@@ -108,7 +108,7 @@ namespace Microsoft.Health.Fhir.Core.Features.Persistence.InMemory
             return $"{resourceType}_{resourceId}";
         }
 
-        public Task UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
+        public Task<bool> UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

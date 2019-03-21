@@ -113,7 +113,7 @@ namespace Microsoft.Health.Fhir.Tests.Integration.Persistence
             await _dataStore.HardDeleteAsync(key, cancellationToken);
         }
 
-        public Task UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
+        public Task<bool> UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

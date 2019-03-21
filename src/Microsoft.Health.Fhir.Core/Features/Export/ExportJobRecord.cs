@@ -20,28 +20,37 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
 
             JobStatus = ExportJobStatus.Queued;
             Id = Guid.NewGuid().ToString();
+
+            QueuedTime = DateTimeOffset.Now;
+            LastModifiedTime = DateTimeOffset.Now;
+
             Progress = new ExportJobProgress("query", 1);
             Output = new ExportJobOutput();
+        }
+
+        [JsonConstructor]
+        protected ExportJobRecord()
+        {
         }
 
         [JsonProperty("id")]
         public string Id { get; }
 
-        public ExportJobStatus JobStatus { get; }
+        public string JobHash { get; }
 
-        public Uri RequestUri { get; }
+        public ExportJobStatus JobStatus { get; private set; }
 
-        public DateTimeOffset QueuedTimeStamp { get; }
+        public DateTimeOffset QueuedTime { get; }
 
-        public DateTimeOffset LastModified { get; }
+        public DateTimeOffset LastModifiedTime { get; private set; }
 
-        public DateTimeOffset StartTimeStamp { get; }
+        public DateTimeOffset JobStartTime { get; private set; }
 
-        public DateTimeOffset EndTimeStamp { get; }
+        public DateTimeOffset JobEndTime { get; private set; }
 
-        public int NumberOfConsecutiveFailures { get; }
+        public int NumberOfConsecutiveFailures { get; set; }
 
-        public int TotalNumberOfFailures { get; }
+        public int TotalNumberOfFailures { get; set; }
 
         [JsonProperty("partitionKey")]
         public string PartitionKey { get; } = "ExportJob";
@@ -57,6 +66,26 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
             EnsureArg.IsNotNullOrEmpty(progress?.Query, nameof(progress));
 
             Progress = progress;
+        }
+
+        public void UpdateLastModifiedTime(DateTimeOffset modifiedTime)
+        {
+            LastModifiedTime = modifiedTime;
+        }
+
+        public void UpdateJobStartTime(DateTimeOffset startTime)
+        {
+            JobStartTime = startTime;
+        }
+
+        public void UpdateJobEndTime(DateTimeOffset endTime)
+        {
+            JobEndTime = endTime;
+        }
+
+        public void UpdateJobStatus(ExportJobStatus jobStatus)
+        {
+            JobStatus = jobStatus;
         }
     }
 }

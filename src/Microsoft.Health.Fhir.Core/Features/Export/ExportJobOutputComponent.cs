@@ -7,9 +7,9 @@ using EnsureThat;
 
 namespace Microsoft.Health.Fhir.Core.Features.Export
 {
-    public class ExportJobOutputResult
+    public class ExportJobOutputComponent
     {
-        public ExportJobOutputResult(
+        public ExportJobOutputComponent(
             string type,
             int sequence,
             int count,

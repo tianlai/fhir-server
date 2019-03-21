@@ -22,6 +22,6 @@ namespace Microsoft.Health.Fhir.Core.Features.Persistence
 
         Task HardDeleteAsync(ResourceKey key, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default);
+        Task<bool> UpsertExportJobAsync(ExportJobRecord jobRecord, CancellationToken cancellationToken = default);
     }
 }

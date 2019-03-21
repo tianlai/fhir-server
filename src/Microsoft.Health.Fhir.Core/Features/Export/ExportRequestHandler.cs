@@ -29,12 +29,12 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
             EnsureArg.IsNotNull(request, nameof(request));
 
             var jobRecord = new ExportJobRecord(request);
-            jobRecord.Output.AddError(new ExportJobOutputResult("error", 1, 1, 12345));
-            jobRecord.Output.AddResult(new ExportJobOutputResult("Patient", 2, 100, 13452345));
+            jobRecord.Output.AddError(new ExportJobOutputComponent("error", 1, 1, 12345));
+            jobRecord.Output.AddResult(new ExportJobOutputComponent("Patient", 2, 100, 13452345));
 
-            await _dataStore.UpsertExportJobAsync(jobRecord, cancellationToken);
+            var result = await _dataStore.UpsertExportJobAsync(jobRecord, cancellationToken);
 
-            return new ExportResponse();
+            return new ExportResponse(jobRecord.Id, result);
         }
     }
 }
