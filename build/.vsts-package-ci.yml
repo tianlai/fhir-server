@@ -3,7 +3,7 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/vsts/pipelines/languages/dotnet-core
 
-name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:-r)
+name: vNext$(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:-r)
 variables:
   buildConfiguration: 'Release'
 jobs:
@@ -11,12 +11,12 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   steps:
+  - task: PowerShell@2
+    displayName: 'Update $(package.name) to $(package.version)'
+    inputs:
+      pwsh: true
+      targetType: filePath
+      filePath: build/Update-Packages.ps1
+      arguments: -PackageName $(package.name) -PackageVersion $(package.version)
+      workingDirectory: $(Build.SourcesDirectory)
   - template: build.yml
-
-- job: Linux
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - template: build.yml
-    parameters:
-      packageArtifacts: false
