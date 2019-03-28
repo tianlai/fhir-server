@@ -23,9 +23,6 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
 
             QueuedTime = DateTimeOffset.Now;
             LastModifiedTime = DateTimeOffset.Now;
-
-            Progress = new ExportJobProgress("query", 1);
-            Output = new ExportJobOutput();
         }
 
         [JsonConstructor]

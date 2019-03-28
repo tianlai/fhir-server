@@ -11,6 +11,7 @@ using Microsoft.Health.Fhir.Api.Controllers;
 using Microsoft.Health.Fhir.Core.Configs;
 using Microsoft.Health.Fhir.Core.Exceptions;
 using Microsoft.Health.Fhir.Core.Features.Context;
+using Microsoft.Health.Fhir.Core.Features.Routing;
 using NSubstitute;
 using Xunit;
 
@@ -76,6 +77,7 @@ namespace Microsoft.Health.Fhir.Api.UnitTests.Controllers
             return new ExportController(
                 Substitute.For<IMediator>(),
                 Substitute.For<IFhirRequestContextAccessor>(),
+                Substitute.For<IUrlResolver>(),
                 optionsOperationConfiguration,
                 NullLogger<ExportController>.Instance);
         }

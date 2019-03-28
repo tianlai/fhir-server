@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EnsureThat;
@@ -29,8 +28,9 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
             EnsureArg.IsNotNull(request, nameof(request));
 
             var jobRecord = new ExportJobRecord(request);
-            jobRecord.Output.AddError(new ExportJobOutputComponent("error", 1, 1, 12345));
-            jobRecord.Output.AddResult(new ExportJobOutputComponent("Patient", 2, 100, 13452345));
+
+            // jobRecord.Output.AddError(new ExportJobOutputComponent("error", 1, 1, 12345));
+            // jobRecord.Output.AddResult(new ExportJobOutputComponent("Patient", 2, 100, 13452345));
 
             var result = await _dataStore.UpsertExportJobAsync(jobRecord, cancellationToken);
 

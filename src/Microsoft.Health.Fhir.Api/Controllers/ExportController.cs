@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using EnsureThat;
@@ -16,14 +15,16 @@ using Microsoft.Extensions.Options;
 using Microsoft.Health.Fhir.Api.Features.ActionResults;
 using Microsoft.Health.Fhir.Api.Features.Audit;
 using Microsoft.Health.Fhir.Api.Features.Filters;
+using Microsoft.Health.Fhir.Api.Features.Headers;
 using Microsoft.Health.Fhir.Api.Features.Routing;
 using Microsoft.Health.Fhir.Api.Features.Security;
 using Microsoft.Health.Fhir.Core.Configs;
 using Microsoft.Health.Fhir.Core.Exceptions;
 using Microsoft.Health.Fhir.Core.Extensions;
 using Microsoft.Health.Fhir.Core.Features.Context;
+using Microsoft.Health.Fhir.Core.Features.Routing;
+using Microsoft.Health.Fhir.Core.Messages.Export;
 using Microsoft.Health.Fhir.ValueSets;
-using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.Health.Fhir.Api.Controllers
 {
@@ -45,22 +46,26 @@ namespace Microsoft.Health.Fhir.Api.Controllers
 
         private readonly IMediator _mediator;
         private readonly IFhirRequestContextAccessor _fhirRequestContextAccessor;
+        private readonly IUrlResolver _urlResolver;
         private readonly ExportConfiguration _exportConfig;
         private readonly ILogger<ExportController> _logger;
 
         public ExportController(
             IMediator mediator,
             IFhirRequestContextAccessor fhirRequestContextAccessor,
+            IUrlResolver urlResolver,
             IOptions<OperationsConfiguration> operationsConfig,
             ILogger<ExportController> logger)
         {
             EnsureArg.IsNotNull(mediator, nameof(mediator));
             EnsureArg.IsNotNull(fhirRequestContextAccessor, nameof(fhirRequestContextAccessor));
+            EnsureArg.IsNotNull(urlResolver, nameof(urlResolver));
             EnsureArg.IsNotNull(operationsConfig?.Value?.Export, nameof(operationsConfig));
             EnsureArg.IsNotNull(logger, nameof(logger));
 
             _mediator = mediator;
             _fhirRequestContextAccessor = fhirRequestContextAccessor;
+            _urlResolver = urlResolver;
             _exportConfig = operationsConfig.Value.Export;
             _logger = logger;
         }
@@ -76,12 +81,7 @@ namespace Microsoft.Health.Fhir.Api.Controllers
                 throw new RequestNotValidException(string.Format(Resources.UnsupportedOperation, "Export"));
             }
 
-            var response = await _mediator.ExportAsync(_fhirRequestContextAccessor.FhirRequestContext.Uri);
-
-            OperationOutcome result = GenerateOperationOutcome(
-                OperationOutcome.IssueSeverity.Error,
-                OperationOutcome.IssueType.NotSupported,
-                Resources.NotFoundException);
+            ExportResponse response = await _mediator.ExportAsync(_fhirRequestContextAccessor.FhirRequestContext.Uri);
 
             HttpStatusCode responseCode;
             if (response.ExportJobQueued)
@@ -93,10 +93,16 @@ namespace Microsoft.Health.Fhir.Api.Controllers
                 responseCode = HttpStatusCode.InternalServerError;
             }
 
-            var fhirResult = FhirResult.Create(result, responseCode);
+            OperationOutcome outcome = new OperationOutcome()
+            {
+                Id = _fhirRequestContextAccessor.FhirRequestContext.CorrelationId,
+            };
 
-            string contentLocation = Request.Host + "/_operations/export/" + response.Id;
-            fhirResult.Headers.Add(HeaderNames.ContentLocation, contentLocation);
+            var fhirResult = FhirResult.Create(outcome, responseCode);
+            fhirResult.SetContentLocationHeader(_urlResolver, "export", response.Id);
+
+            // string contentLocation = Request.Host + "/_operations/export/" + response.Id;
+            // fhirResult.Headers.Add(HeaderNames.ContentLocation, contentLocation);
 
             return fhirResult;
         }
@@ -129,6 +135,13 @@ namespace Microsoft.Health.Fhir.Api.Controllers
             }
 
             return CheckIfExportIsEnabledAndRespond();
+        }
+
+        [HttpGet]
+        [Route(KnownRoutes.ExportStatusById, Name = RouteNames.GetExportStatusById)]
+        public IActionResult GetExportStatusById(string id)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

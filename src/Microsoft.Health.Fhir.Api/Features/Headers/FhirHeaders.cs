@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Globalization;
+using EnsureThat;
 using Microsoft.Health.Fhir.Api.Features.ActionResults;
 using Microsoft.Health.Fhir.Core.Features.Persistence;
 using Microsoft.Health.Fhir.Core.Features.Routing;
@@ -61,6 +62,17 @@ namespace Microsoft.Health.Fhir.Api.Features.Headers
                 }
             }
 
+            return fhirResult;
+        }
+
+        public static FhirResult SetContentLocationHeader(this FhirResult fhirResult, IUrlResolver urlResolver, string operationName, string id)
+        {
+            EnsureArg.IsNotNullOrEmpty(operationName, nameof(operationName));
+            EnsureArg.IsNotNullOrEmpty(id, nameof(id));
+
+            var url = urlResolver.ResolveOperationResultUrl(operationName, id);
+
+            fhirResult.Headers.Add(HeaderNames.ContentLocation, url.ToString());
             return fhirResult;
         }
     }

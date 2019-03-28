@@ -223,7 +223,7 @@ namespace Microsoft.Health.Fhir.CosmosDb.Features.Storage
                 disableAutomaticIdGeneration: true,
                 cancellationToken: cancellationToken);
 
-            return result.StatusCode == HttpStatusCode.OK;
+            return result.StatusCode == HttpStatusCode.Created;
         }
 
         internal IDocumentQuery<T> CreateDocumentQuery<T>(

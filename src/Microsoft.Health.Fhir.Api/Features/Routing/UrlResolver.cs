@@ -174,5 +174,27 @@ namespace Microsoft.Health.Fhir.Api.Features.Routing
 
             return new Uri(uriString);
         }
+
+        public Uri ResolveOperationResultUrl(string operationName, string id)
+        {
+            EnsureArg.IsNotNullOrEmpty(operationName, nameof(operationName));
+            EnsureArg.IsNotNullOrEmpty(id, nameof(id));
+
+            if (!string.Equals(operationName, "export", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotImplementedException();
+            }
+
+            RouteValueDictionary routeValues = new RouteValueDictionary();
+            routeValues.Add(KnownActionParameterNames.Id, id);
+
+            string uriString = UrlHelper.RouteUrl(
+                RouteNames.GetExportStatusById,
+                routeValues,
+                Request.Scheme,
+                Request.Host.Value);
+
+            return new Uri(uriString);
+        }
     }
 }

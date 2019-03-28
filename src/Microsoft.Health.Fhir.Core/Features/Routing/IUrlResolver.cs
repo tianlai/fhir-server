@@ -44,5 +44,7 @@ namespace Microsoft.Health.Fhir.Core.Features.Routing
         /// <param name="routeValues">Any route values to use in the route.</param>
         /// <returns>The URL.</returns>
         Uri ResolveRouteNameUrl(string routeName, IDictionary<string, object> routeValues);
+
+        Uri ResolveOperationResultUrl(string operationName, string id);
     }
 }
