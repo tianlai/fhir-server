@@ -216,7 +216,7 @@ namespace Microsoft.Health.Fhir.CosmosDb.Features.Storage
         {
             EnsureArg.IsNotNull(jobRecord, nameof(jobRecord));
 
-            var result = await _documentClient.CreateDocumentAsync(
+            var result = await _documentClient.UpsertDocumentAsync(
                 _collectionUri,
                 jobRecord,
                 new RequestOptions() { PartitionKey = new PartitionKey(jobRecord.PartitionKey) },

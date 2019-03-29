@@ -15,8 +15,10 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Health.Fhir.Core.Exceptions;
 using Microsoft.Health.Fhir.Core.Features;
 using Microsoft.Health.Fhir.Core.Features.Context;
+using Microsoft.Health.Fhir.Core.Features.Operations;
 using Microsoft.Health.Fhir.Core.Features.Routing;
 
 namespace Microsoft.Health.Fhir.Api.Features.Routing
@@ -180,13 +182,15 @@ namespace Microsoft.Health.Fhir.Api.Features.Routing
             EnsureArg.IsNotNullOrEmpty(operationName, nameof(operationName));
             EnsureArg.IsNotNullOrEmpty(id, nameof(id));
 
-            if (!string.Equals(operationName, "export", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(operationName, Constants.ExportName, StringComparison.OrdinalIgnoreCase))
             {
-                throw new NotImplementedException();
+                throw new OperationNotImplementedException(Resources.NotImplemented);
             }
 
-            RouteValueDictionary routeValues = new RouteValueDictionary();
-            routeValues.Add(KnownActionParameterNames.Id, id);
+            var routeValues = new RouteValueDictionary()
+            {
+                { KnownActionParameterNames.Id, id },
+            };
 
             string uriString = UrlHelper.RouteUrl(
                 RouteNames.GetExportStatusById,

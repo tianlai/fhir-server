@@ -27,10 +27,7 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
         {
             EnsureArg.IsNotNull(request, nameof(request));
 
-            var jobRecord = new ExportJobRecord(request);
-
-            // jobRecord.Output.AddError(new ExportJobOutputComponent("error", 1, 1, 12345));
-            // jobRecord.Output.AddResult(new ExportJobOutputComponent("Patient", 2, 100, 13452345));
+            var jobRecord = new ExportJobRecord(request, 1);
 
             var result = await _dataStore.UpsertExportJobAsync(jobRecord, cancellationToken);
 

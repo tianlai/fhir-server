@@ -5,6 +5,7 @@
 
 using System;
 using EnsureThat;
+using Microsoft.Health.Fhir.Core.Features.Operations;
 using Microsoft.Health.Fhir.Core.Messages.Export;
 using Newtonsoft.Json;
 
@@ -12,15 +13,16 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
 {
     public class ExportJobRecord
     {
-        public ExportJobRecord(ExportRequest exportRequest)
+        public ExportJobRecord(ExportRequest exportRequest, int jobSchemaVersion)
         {
             EnsureArg.IsNotNull(exportRequest, nameof(exportRequest));
+            EnsureArg.IsGt(jobSchemaVersion, 0, nameof(jobSchemaVersion));
 
             Request = exportRequest;
+            JobSchemaVersion = jobSchemaVersion;
 
             JobStatus = ExportJobStatus.Queued;
             Id = Guid.NewGuid().ToString();
-
             QueuedTime = DateTimeOffset.Now;
             LastModifiedTime = DateTimeOffset.Now;
         }
@@ -30,59 +32,49 @@ namespace Microsoft.Health.Fhir.Core.Features.Export
         {
         }
 
-        [JsonProperty("id")]
-        public string Id { get; }
-
-        public string JobHash { get; }
-
-        public ExportJobStatus JobStatus { get; private set; }
-
-        public DateTimeOffset QueuedTime { get; }
-
-        public DateTimeOffset LastModifiedTime { get; private set; }
-
-        public DateTimeOffset JobStartTime { get; private set; }
-
-        public DateTimeOffset JobEndTime { get; private set; }
-
-        public int NumberOfConsecutiveFailures { get; set; }
-
-        public int TotalNumberOfFailures { get; set; }
-
-        [JsonProperty("partitionKey")]
-        public string PartitionKey { get; } = "ExportJob";
-
+        [JsonProperty(JobRecordProperties.Request)]
         public ExportRequest Request { get; }
 
-        public ExportJobProgress Progress { get; private set; }
+        [JsonProperty(JobRecordProperties.Id)]
+        public string Id { get; }
 
-        public ExportJobOutput Output { get; }
+        [JsonProperty(JobRecordProperties.JobHash)]
+        public string JobHash { get; }
 
-        public void UpdateJobProgress(ExportJobProgress progress)
-        {
-            EnsureArg.IsNotNullOrEmpty(progress?.Query, nameof(progress));
+        [JsonProperty(JobRecordProperties.JobQueuedTime)]
+        public DateTimeOffset QueuedTime { get; }
 
-            Progress = progress;
-        }
+        [JsonProperty(JobRecordProperties.PartitonKey)]
+        public string PartitionKey { get; } = "ExportJob";
 
-        public void UpdateLastModifiedTime(DateTimeOffset modifiedTime)
-        {
-            LastModifiedTime = modifiedTime;
-        }
+        [JsonProperty(JobRecordProperties.JobSchemaVersion)]
+        public int JobSchemaVersion { get; }
 
-        public void UpdateJobStartTime(DateTimeOffset startTime)
-        {
-            JobStartTime = startTime;
-        }
+        [JsonProperty(JobRecordProperties.Output)]
+        public ExportJobOutput Output { get; } = new ExportJobOutput();
 
-        public void UpdateJobEndTime(DateTimeOffset endTime)
-        {
-            JobEndTime = endTime;
-        }
+        [JsonProperty(JobRecordProperties.JobStatus)]
+        public ExportJobStatus JobStatus { get; set; }
 
-        public void UpdateJobStatus(ExportJobStatus jobStatus)
-        {
-            JobStatus = jobStatus;
-        }
+        [JsonProperty(JobRecordProperties.LastModified)]
+        public DateTimeOffset LastModifiedTime { get; set; }
+
+        [JsonProperty(JobRecordProperties.JobStartTime)]
+        public DateTimeOffset? JobStartTime { get; set; }
+
+        [JsonProperty(JobRecordProperties.JobEndTime)]
+        public DateTimeOffset? JobEndTime { get; set; }
+
+        [JsonProperty(JobRecordProperties.JobCancelledTime)]
+        public DateTimeOffset? JobCancelledTime { get; set; }
+
+        [JsonProperty(JobRecordProperties.NumberOfConsecutiveFailures)]
+        public int NumberOfConsecutiveFailures { get; set; }
+
+        [JsonProperty(JobRecordProperties.TotalNumberOfFailures)]
+        public int TotalNumberOfFailures { get; set; }
+
+        [JsonProperty(JobRecordProperties.Progress)]
+        public ExportJobProgress Progress { get; set; }
     }
 }

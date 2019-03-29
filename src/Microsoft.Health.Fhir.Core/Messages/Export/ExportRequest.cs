@@ -6,6 +6,7 @@
 using System;
 using EnsureThat;
 using MediatR;
+using Newtonsoft.Json;
 
 namespace Microsoft.Health.Fhir.Core.Messages.Export
 {
@@ -18,6 +19,7 @@ namespace Microsoft.Health.Fhir.Core.Messages.Export
             RequestUri = requestUri;
         }
 
+        [JsonProperty("requestUri")]
         public Uri RequestUri { get; }
     }
 }
